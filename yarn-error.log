@@ -1,0 +1,27 @@
+Arguments: 
+  /usr/bin/node /usr/local/bin/yarn add --dev @openzeppelin/contracts
+
+PATH: 
+  /home/nic/.cargo/bin:/home/nic/.local/share/solana/install/active_release/bin:/home/nic/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nic/.local/bin:/home/nic/.foundry/bin:/home/nic/.foundry/bin:/home/nic/.foundry/bin:/home/nic/.foundry/bin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.17.1
+
+Platform: 
+  linux x64
+
+Trace: 
+  Error: getaddrinfo EAI_AGAIN registry.yarnpkg.com
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:109:26)
+
+npm manifest: 
+  No manifest
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
