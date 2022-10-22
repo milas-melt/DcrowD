@@ -36,3 +36,9 @@ type FundingCancelled @entity {
   funder: Bytes!
   amount: BigInt!
 }
+
+type FeesWithdrawn @entity {
+  id: ID!
+  to: Bytes!
+  amount: BigInt!
+}
