@@ -6,16 +6,16 @@ import backgroundImage from '@/images/background-faqs.jpg'
 const faqs = [
   [
     {
-      question: 'Does TaxPal handle VAT?',
+      question: 'Does DcrowD handle VAT?',
       answer:
         'Well no, but if you move your company offshore you can probably ignore it.',
     },
     {
-      question: 'Can I pay for my subscription via purchase order?',
+      question: 'Can I pay for my subscription via crypto curriencies?',
       answer: 'Absolutely, we are happy to take your money in all forms.',
     },
     {
-      question: 'How do I apply for a job at TaxPal?',
+      question: 'How do I apply for a job at DcrowD?',
       answer:
         'We only hire our customers, so subscribe for a minimum of 6 months and then let’s talk.',
     },
@@ -24,17 +24,11 @@ const faqs = [
     {
       question: 'What was that testimonial about tax fraud all about?',
       answer:
-        'TaxPal is just a software application, ultimately your books are your responsibility.',
+        'DcrowD is just a software application, ultimately your actions are your responsibility.',
     },
     {
       question:
-        'TaxPal sounds horrible but why do I still feel compelled to purchase?',
-      answer:
-        'This is the power of excellent visual design. You just can’t resist it, no matter how poorly it actually functions.',
-    },
-    {
-      question:
-        'I found other companies called TaxPal, are you sure you can use this name?',
+        'I found other companies called DcrowD, are you sure you can use this name?',
       answer:
         'Honestly not sure at all. We haven’t actually incorporated or anything, we just thought it sounded cool and made this website.',
     },
@@ -43,7 +37,7 @@ const faqs = [
     {
       question: 'How do you generate reports?',
       answer:
-        'You just tell us what data you need a report for, and we get our kids to create beautiful charts for you using only the finest crayons.',
+        "We just send you random charts and act as if you're successful. Feel good, right?",
     },
     {
       question: 'Can we expect more inventory features?',

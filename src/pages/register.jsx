@@ -1,10 +1,11 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import Image from 'next/future/image'
 
 import { AuthLayout } from '@/components/AuthLayout'
 import { Button } from '@/components/Button'
 import { SelectField, TextField } from '@/components/Fields'
-import { Logo } from '@/components/Logo'
+import logoDcrowD from '@/images/logos/dcrowd.svg'
 
 export default function Register() {
   return (
@@ -15,7 +16,7 @@ export default function Register() {
       <AuthLayout>
         <div className="flex flex-col">
           <Link href="/" aria-label="Home">
-            <Logo className="h-10 w-auto" />
+            <Image src={logoDcrowD} alt="DcrowD" unoptimized />
           </Link>
           <div className="mt-20">
             <h2 className="text-lg font-semibold text-gray-900">
@@ -77,10 +78,9 @@ export default function Register() {
             id="referral_source"
             name="referral_source"
           >
-            <option>AltaVista search</option>
-            <option>Super Bowl commercial</option>
-            <option>Our route 34 city bus ad</option>
-            <option>The “Never Use This” podcast</option>
+            <option>Polygon x EasyA Hackathon teammates</option>
+            <option>Google search</option>
+            <option>Lens Protocol</option>
           </SelectField>
           <div className="col-span-full">
             <Button

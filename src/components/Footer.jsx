@@ -1,15 +1,18 @@
 import Link from 'next/link'
+import Image from 'next/future/image'
 
 import { Container } from '@/components/Container'
-import { Logo } from '@/components/Logo'
+import logoDcrowD from '@/images/logos/dcrowd.svg'
 import { NavLink } from '@/components/NavLink'
 
 export function Footer() {
   return (
     <footer className="bg-slate-50">
       <Container>
-        <div className="py-16">
-          <Logo className="mx-auto h-10 w-auto" />
+        <div className="flex-wor py-16">
+          <div className="flex justify-center">
+            <Image src={logoDcrowD} alt="DcrowD" unoptimized />
+          </div>
           <nav className="mt-10 text-sm" aria-label="quick links">
             <div className="-my-1 flex justify-center gap-x-6">
               <NavLink href="#features">Features</NavLink>
@@ -21,7 +24,7 @@ export function Footer() {
         <div className="flex flex-col items-center border-t border-slate-400/10 py-10 sm:flex-row-reverse sm:justify-between">
           <div className="flex gap-x-6">
             <Link
-              href="https://twitter.com"
+              href="https://www.youtube.com/watch?v=wF1l_KtIUoA"
               className="group"
               aria-label="TaxPal on Twitter"
             >
@@ -33,7 +36,7 @@ export function Footer() {
               </svg>
             </Link>
             <Link
-              href="https://github.com"
+              href="https://www.youtube.com/watch?v=wF1l_KtIUoA"
               className="group"
               aria-label="TaxPal on GitHub"
             >
@@ -46,7 +49,7 @@ export function Footer() {
             </Link>
           </div>
           <p className="mt-6 text-sm text-slate-500 sm:mt-0">
-            Copyright &copy; {new Date().getFullYear()} TaxPal. All rights
+            Copyright &copy; {new Date().getFullYear()} DcrowD. All rights
             reserved.
           </p>
         </div>

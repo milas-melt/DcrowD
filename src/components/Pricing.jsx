@@ -118,30 +118,25 @@ export function Pricing() {
           <Plan
             name="Starter"
             price="$9"
-            description="Good for anyone who is self-employed and just getting started."
+            description="For one person."
             href="/register"
             features={[
-              'Send 10 quotes and invoices',
+              'See who likes you',
               'Connect up to 2 bank accounts',
-              'Track up to 15 expenses per month',
-              'Manual payroll support',
-              'Export up to 3 reports',
+              'Export up to 3 analytics reports',
             ]}
           />
           <Plan
             featured
-            name="Small business"
+            name="Small organisation"
             price="$15"
-            description="Perfect for small / medium sized businesses."
+            description="Perfect for small / medium sized organisations."
             href="/register"
             features={[
-              'Send 25 quotes and invoices',
+              'Full profile tracker (likes, views)',
               'Connect up to 5 bank accounts',
-              'Track up to 50 expenses per month',
-              'Automated payroll support',
-              'Export up to 12 reports',
-              'Bulk reconcile transactions',
-              'Track in multiple currencies',
+              'Export up to 12 analytics reports',
+              'Get paid in multiple crypto-currencies',
             ]}
           />
           <Plan
@@ -150,11 +145,10 @@ export function Pricing() {
             description="For even the biggest enterprise companies."
             href="/register"
             features={[
-              'Send unlimited quotes and invoices',
               'Connect up to 15 bank accounts',
-              'Track up to 200 expenses per month',
-              'Automated payroll support',
-              'Export up to 25 reports, including TPS',
+              'Export up to 12 analytics reports',
+              'Get paid in multiple crypto & fiat currencies',
+              'Target audience',
             ]}
           />
         </div>

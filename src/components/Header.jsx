@@ -6,7 +6,6 @@ import Image from 'next/future/image'
 
 import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
-// import { Logo } from '@/components/Logo'
 import logoDcrowD from '@/images/logos/dcrowd.svg'
 import { NavLink } from '@/components/NavLink'
 
