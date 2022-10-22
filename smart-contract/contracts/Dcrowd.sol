@@ -2,106 +2,161 @@
 pragma solidity ^0.8.0;
 
 import "./interfaces/IDcrowd.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract Dcrowd is IDcrowd, ReentrancyGuard {
+contract Dcrowd is IDcrowd, Ownable, ReentrancyGuard {
+    //----------------------------------------------------- constants
+
+    uint16 public constant FEE_DENOMINATOR = 10000;
+
     //----------------------------------------------------- storage
 
-    uint private _projectCounter;
+    uint256 private _projectCounter;
+
+    uint256 private _feeBalance;
+
+    uint64 private _maxFundingPeriod;
+
+    uint16 private _platformFee;
 
     // project ID -> project info
-    mapping(uint => ProjectInfo) private _projectInfos;
+    mapping(uint256 => ProjectInfo) private _projectInfos;
+
+    // project ID -> project uri
+    mapping(uint256 => string) private _uris;
 
     // funder address -> project ID -> amount funded
-    mapping(address => mapping(uint => uint)) private _fundings;
+    mapping(address => mapping(uint256 => uint256)) private _fundings;
 
     //----------------------------------------------------- misc functions
 
     constructor() {
         _projectCounter = 0;
+        _maxFundingPeriod = 100 days;
+        _platformFee = 0;
     }
 
-    //----------------------------------------------------- project functions
+    //----------------------------------------------------- creator functions
 
-    function createProject(uint64 expires, uint goal, string calldata uri) external payable override returns (uint) {
+    function createProject(
+        uint64 expires,
+        uint256 goal,
+        string calldata uri
+    ) external override returns (uint256) {
         // expires valid
-        if (expires < block.timestamp || block.timestamp + 100 days < expires)
+        if (expires < block.timestamp || block.timestamp + _maxFundingPeriod < expires)
             revert Dcrowd_InvalidExpires(expires);
-
         // store project
-        uint projectId = _projectCounter++;
+        uint256 projectId = _projectCounter++;
         _projectInfos[projectId] = ProjectInfo({
             creator: msg.sender,
             expires: expires,
             funded: false,
             goal: goal,
-            balance: msg.value,
-            uri: uri
+            balance: 0
         });
-
-        emit ProjectCreated(projectId, msg.sender, expires, goal, uri);
+        _uris[projectId] = uri;
+        // emit and return
+        emit ProjectCreated(projectId, _msgSender(), expires, goal, uri);
         return projectId;
     }
 
-    function fundProject(uint projectId) external payable override {
-        // ETH is sent
-        if (msg.value == 0) revert();
-
-        ProjectInfo memory project = _projectInfos[projectId];
-        // project exists
-        if (project.creator == address(0))
-            revert Dcrowd_ProjectNotExists(projectId);
-        // project not fully funded
-        if (project.goal <= project.balance || project.funded)
-            revert Dcrowd_ProjectAlreadyFunded(projectId);
-        if (project.expires < block.timestamp)
-            revert Dcrowd_ProjectFundingExpired(projectId);
-
-        _projectInfos[projectId].balance += msg.value;
-        _fundings[msg.sender][projectId] += msg.value;
-        emit ProjectFunded(projectId, msg.sender, msg.value);
-    }
-
-    function collectFunds(uint projectId) external override nonReentrant {
+    function collectFunds(uint256 projectId) external override nonReentrant {
         ProjectInfo memory project = _projectInfos[projectId];
         // sender is creator
-        if (msg.sender != project.creator) revert Dcrowd_NotProjectCreator(msg.sender);
+        if (_msgSender() != project.creator) revert Dcrowd_NotProjectCreator(_msgSender());
         // project is fully funded
         if (project.balance < project.goal) revert Dcrowd_ProjectNotFunded(projectId);
-        // funds have not been already collected
+        // funds have not already been collected
         if (project.funded) revert Dcrowd_ProjectAlreadyFunded(projectId);
-
         // update storage
         _projectInfos[projectId].funded = true;
-
+        // compute fees
+        uint256 fees = (project.balance * _platformFee) / FEE_DENOMINATOR;
+        uint256 valueToCreator = project.balance - fees;
         // transfer funds
-        (bool success, ) = project.creator.call{value: project.balance, gas: 2300}("");
-        if (!success) revert Dcrowd_TransferFailed(project.creator, project.balance);
-        emit FundsCollected(projectId, project.creator, project.balance);
+        (bool success, ) = project.creator.call{value: valueToCreator, gas: 2300}("");
+        if (!success) revert Dcrowd_TransferFailed(project.creator, valueToCreator);
+        _feeBalance += fees;
+        emit FundsCollected(projectId, project.creator, valueToCreator);
     }
 
-    function cancelFunding(uint projectId, uint amount) external override {
+    //----------------------------------------------------- funder functions
+
+    function fundProject(uint256 projectId) external payable override {
         ProjectInfo memory project = _projectInfos[projectId];
-        uint funding = _fundings[msg.sender][projectId];
+        // ETH is sent
+        if (msg.value == 0) revert();
+        // project exists
+        if (project.creator == address(0)) revert Dcrowd_ProjectNotExists(projectId);
+        // project not funded
+        if (project.goal <= project.balance || project.funded)
+            revert Dcrowd_ProjectAlreadyFunded(projectId);
+        // funding not expired
+        if (project.expires < block.timestamp) revert Dcrowd_ProjectFundingExpired(projectId);
+        // update storage
+        _projectInfos[projectId].balance += msg.value;
+        _fundings[_msgSender()][projectId] += msg.value;
+        emit ProjectFunded(projectId, _msgSender(), msg.value);
+    }
+
+    function cancelFunding(uint256 projectId, uint256 amount) external override {
+        ProjectInfo memory project = _projectInfos[projectId];
+        uint256 funding_ = _fundings[_msgSender()][projectId];
         // project exists
         if (project.creator == address(0)) revert Dcrowd_ProjectNotExists(projectId);
         // project not funded
         if (project.funded) revert Dcrowd_ProjectAlreadyFunded(projectId);
-        // has funded
-        if (funding == 0) revert();
-
+        // sender has funded
+        if (funding_ < amount || amount == 0) revert Dcrowd_InsufficientAmount(amount, funding_);
         // transfer funds
-        (bool success, ) = msg.sender.call{value: amount, gas: 2300}("");
+        (bool success, ) = _msgSender().call{value: amount, gas: 2300}("");
         if (!success) revert Dcrowd_TransferFailed(msg.sender, amount);
+        emit FundingCancelled(projectId, _msgSender(), amount);
+    }
+
+    //----------------------------------------------------- owner functions
+
+    function withdrawFees(address to) external override onlyOwner {
+        // there are fees to transfer
+        uint256 balance = _feeBalance;
+        if (balance == 0) revert Dcrowd_InsufficientAmount(balance, 1);
+        // cannot transfer to zero address
+        if (to == address(0)) revert Dcrowd_InvalidAddress(to);
+        _feeBalance = 0;
+        (bool success, ) = to.call{value: balance, gas: 2300}("");
+        if (!success) revert Dcrowd_TransferFailed(to, balance);
+        emit FeesWithdrawn(to, balance);
+    }
+
+    function updateMaxFundingPeriod(uint64 newMaxFundingPeriod) external override onlyOwner {
+        _maxFundingPeriod = newMaxFundingPeriod;
+    }
+
+    function updatePlatformFee(uint16 newPlatformFee) external override onlyOwner {
+        if (FEE_DENOMINATOR < newPlatformFee) revert();
+        _platformFee = newPlatformFee;
     }
 
     //----------------------------------------------------- accessor functions
+    function feeBalance() external view override returns (uint256) {
+        return _feeBalance;
+    }
 
-    function projectCounter() external view override returns (uint) {
+    function projectCounter() external view override returns (uint256) {
         return _projectCounter;
     }
 
-    function getProjectInfo(uint projectId) external view override returns (ProjectInfo memory) {
+    function projectInfo(uint256 projectId) external view override returns (ProjectInfo memory) {
         return _projectInfos[projectId];
+    }
+
+    function projectURI(uint256 projectId) external view override returns (string memory) {
+        return _uris[projectId];
+    }
+
+    function funding(address funder, uint256 projectId) external view override returns (uint256) {
+        return _fundings[funder][projectId];
     }
 }
