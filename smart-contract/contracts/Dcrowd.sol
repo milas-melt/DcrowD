@@ -86,8 +86,8 @@ contract Dcrowd is IDcrowd, Ownable, ReentrancyGuard {
 
     function fundProject(uint256 projectId) external payable override {
         ProjectInfo memory project = _projectInfos[projectId];
-        // ETH is sent
-        if (msg.value == 0) revert();
+        // value is sent
+        if (msg.value == 0) revert Dcrowd_InsufficientAmount(msg.value, 1);
         // project exists
         if (project.creator == address(0)) revert Dcrowd_ProjectNotExists(projectId);
         // project not funded
@@ -125,6 +125,7 @@ contract Dcrowd is IDcrowd, Ownable, ReentrancyGuard {
         // cannot transfer to zero address
         if (to == address(0)) revert Dcrowd_InvalidAddress(to);
         _feeBalance = 0;
+        // transfer fees
         (bool success, ) = to.call{value: balance, gas: 2300}("");
         if (!success) revert Dcrowd_TransferFailed(to, balance);
         emit FeesWithdrawn(to, balance);
@@ -140,6 +141,7 @@ contract Dcrowd is IDcrowd, Ownable, ReentrancyGuard {
     }
 
     //----------------------------------------------------- accessor functions
+
     function feeBalance() external view override returns (uint256) {
         return _feeBalance;
     }
