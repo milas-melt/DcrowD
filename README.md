@@ -1,0 +1,2 @@
+# DcrowD
+Decentralised CrowdFunding Platform.
