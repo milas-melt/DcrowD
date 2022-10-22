@@ -45,6 +45,8 @@ interface IDcrowd {
 
     event FundingCancelled(uint256 indexed projectId, address indexed funder, uint256 amount);
 
+    event CreatorRatingUpdated(address indexed creator, uint8 rating);
+
     event FeesWithdrawn(address indexed to, uint256 amount);
 
     //----------------------------------------------------- creator functions
@@ -69,6 +71,8 @@ interface IDcrowd {
 
     function withdrawFees(address to) external;
 
+    function updateCreatorRating(address creator, uint8 rating) external;
+
     function updateMaxFundingPeriod(uint64 newMaxFundingPeriod) external;
 
     function updatePlatformFee(uint16 newPlatformFee) external;
@@ -77,6 +81,8 @@ interface IDcrowd {
 
     function feeBalance() external view returns (uint256);
 
+    function creatorRating(address creator) external view returns (uint8);
+
     function projectCounter() external view returns (uint256);
 
     function projectInfo(uint256 projectId) external view returns (ProjectInfo memory);
@@ -84,4 +90,8 @@ interface IDcrowd {
     function projectURI(uint256 projectId) external view returns (string memory);
 
     function funding(address funder, uint256 projectId) external view returns (uint256);
+
+    function maxFundingPeriod() external view returns (uint64);
+
+    function platformFee() external view returns (uint16);
 }

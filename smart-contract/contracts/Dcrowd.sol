@@ -29,6 +29,9 @@ contract Dcrowd is IDcrowd, Ownable, ReentrancyGuard {
     // funder address -> project ID -> amount funded
     mapping(address => mapping(uint256 => uint256)) private _fundings;
 
+    // creator address -> rating
+    mapping(address => uint8) private _creatorRatings;
+
     //----------------------------------------------------- misc functions
 
     constructor() {
@@ -50,7 +53,7 @@ contract Dcrowd is IDcrowd, Ownable, ReentrancyGuard {
         // store project
         uint256 projectId = _projectCounter++;
         _projectInfos[projectId] = ProjectInfo({
-            creator: msg.sender,
+            creator: _msgSender(),
             expires: expires,
             funded: false,
             goal: goal,
@@ -112,7 +115,7 @@ contract Dcrowd is IDcrowd, Ownable, ReentrancyGuard {
         if (funding_ < amount || amount == 0) revert Dcrowd_InsufficientAmount(amount, funding_);
         // transfer funds
         (bool success, ) = _msgSender().call{value: amount, gas: 2300}("");
-        if (!success) revert Dcrowd_TransferFailed(msg.sender, amount);
+        if (!success) revert Dcrowd_TransferFailed(_msgSender(), amount);
         emit FundingCancelled(projectId, _msgSender(), amount);
     }
 
@@ -131,6 +134,11 @@ contract Dcrowd is IDcrowd, Ownable, ReentrancyGuard {
         emit FeesWithdrawn(to, balance);
     }
 
+    function updateCreatorRating(address creator, uint8 rating) external override onlyOwner {
+        _creatorRatings[creator] = rating;
+        emit CreatorRatingUpdated(creator, rating);
+    }
+
     function updateMaxFundingPeriod(uint64 newMaxFundingPeriod) external override onlyOwner {
         _maxFundingPeriod = newMaxFundingPeriod;
     }
@@ -144,6 +152,10 @@ contract Dcrowd is IDcrowd, Ownable, ReentrancyGuard {
 
     function feeBalance() external view override returns (uint256) {
         return _feeBalance;
+    }
+
+    function creatorRating(address creator) external view override returns (uint8) {
+        return _creatorRatings[creator];
     }
 
     function projectCounter() external view override returns (uint256) {
@@ -160,5 +172,13 @@ contract Dcrowd is IDcrowd, Ownable, ReentrancyGuard {
 
     function funding(address funder, uint256 projectId) external view override returns (uint256) {
         return _fundings[funder][projectId];
+    }
+
+    function maxFundingPeriod() external view override returns (uint64) {
+        return _maxFundingPeriod;
+    }
+
+    function platformFee() external view override returns (uint16) {
+        return _platformFee;
     }
 }
