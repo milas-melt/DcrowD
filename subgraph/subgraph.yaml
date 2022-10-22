@@ -1,0 +1,38 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Dcrowd
+    network: mumbai
+    source:
+      address: "0x6De860E68815670Fa34f22639FF11a84c3f6e10A"
+      abi: Dcrowd
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - FeesWithdrawn
+        - FundingCancelled
+        - FundsCollected
+        - OwnershipTransferred
+        - ProjectCreated
+        - ProjectFunded
+      abis:
+        - name: Dcrowd
+          file: ./abis/Dcrowd.json
+      eventHandlers:
+        - event: FeesWithdrawn(indexed address,uint256)
+          handler: handleFeesWithdrawn
+        - event: FundingCancelled(indexed uint256,indexed address,uint256)
+          handler: handleFundingCancelled
+        - event: FundsCollected(indexed uint256,indexed address,uint256)
+          handler: handleFundsCollected
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: ProjectCreated(indexed uint256,indexed address,indexed uint64,uint256,string)
+          handler: handleProjectCreated
+        - event: ProjectFunded(indexed uint256,indexed address,uint256)
+          handler: handleProjectFunded
+      file: ./src/dcrowd.ts
