@@ -69,11 +69,14 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
       });
 
       describe("collectFunds()", () => {
-        let dcrowd: Dcrowd, creator: SignerWithAddress, funder: SignerWithAddress;
+        let dcrowd: Dcrowd,
+          deployer: SignerWithAddress,
+          creator: SignerWithAddress,
+          funder: SignerWithAddress;
         let projectId: BigNumber, now: BigNumber, goal: BigNumber, uri: string;
-        let funds: BigNumber;
+        let funds: BigNumber, platformFee: BigNumber, valueToCreator: BigNumber, fees: BigNumber;
         beforeEach(async () => {
-          ({ dcrowd, creator, funder } = await loadFixture(deployDcrowdFixtures));
+          ({ dcrowd, deployer, creator, funder } = await loadFixture(deployDcrowdFixtures));
           now = BigNumber.from(Math.round(new Date().getTime() / 1000));
           now = now.add(10);
           goal = ethers.utils.parseEther("0.37");
@@ -81,15 +84,46 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
           projectId = await dcrowd.projectCounter();
           await dcrowd.connect(creator).createProject(now, goal, uri);
           funds = goal.add(1000);
-          await dcrowd.connect(funder).fundProject(projectId);
+          await dcrowd.connect(funder).fundProject(projectId, { value: funds });
+          platformFee = BigNumber.from(250);
+          await dcrowd.connect(deployer).updatePlatformFee(platformFee);
+          fees = funds.mul(platformFee).div(10000);
+          valueToCreator = funds.sub(fees);
         });
-        it.skip("reverts if sender is not creator", async () => {});
-        it.skip("reverts if project is not fully funded", async () => {});
-        it.skip("reverts if funds have already been collected", async () => {});
-        it.skip("updates project info", async () => {});
+        it("reverts if sender is not creator", async () => {
+          const error = `Dcrowd_NotProjectCreator("${funder.address}")`;
+          await expect(dcrowd.connect(funder).collectFunds(projectId)).to.be.revertedWith(error);
+        });
+        it("reverts if project is not fully funded", async () => {
+          projectId = await dcrowd.projectCounter();
+          await dcrowd.connect(creator).createProject(now, goal, uri);
+          funds = goal.sub(1);
+          await dcrowd.connect(funder).fundProject(projectId, { value: funds });
+          const error = `Dcrowd_ProjectNotFunded(${projectId.toString()})`;
+          await expect(dcrowd.connect(creator).collectFunds(projectId)).to.be.revertedWith(error);
+        });
+        it("reverts if funds have already been collected", async () => {
+          await dcrowd.connect(creator).collectFunds(projectId);
+          const error = `Dcrowd_ProjectAlreadyFunded(${projectId.toString()})`;
+          await expect(dcrowd.connect(creator).collectFunds(projectId)).to.be.revertedWith(error);
+        });
+        it("updates project info", async () => {
+          await dcrowd.connect(creator).collectFunds(projectId);
+          const project = await dcrowd.projectInfo(projectId);
+          assert(project.funded);
+        });
         it.skip("transfers funds - fees to creator", async () => {});
-        it.skip("adds fees to fee balance", async () => {});
-        it.skip("emits an event", async () => {});
+        it("adds fees to fee balance", async () => {
+          const balanceBefore = await dcrowd.feeBalance();
+          await dcrowd.connect(creator).collectFunds(projectId);
+          const balanceAfter = await dcrowd.feeBalance();
+          assert(balanceAfter.eq(balanceBefore.add(fees)));
+        });
+        it("emits an event", async () => {
+          await expect(dcrowd.connect(creator).collectFunds(projectId))
+            .to.emit(dcrowd, "FundsCollected")
+            .withArgs(projectId, creator.address, valueToCreator);
+        });
       });
 
       describe("fundProject()", () => {
