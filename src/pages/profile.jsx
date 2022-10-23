@@ -9,6 +9,7 @@ import logoDcrowD from '@/images/logos/dcrowd.svg'
 
 import { ethers } from 'ethers'
 import ConnectWallet from '../components/ConnectWallet.jsx'
+import Header from '../components/Header.jsx'
 
 async function handleConnectWallet() {
   const provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
@@ -18,21 +19,18 @@ async function handleConnectWallet() {
   console.log('Account:', await signer.getAddress())
 }
 
-// If you don't specify a //url//, Ethers connects to the default
-// (i.e. ``http:/\/localhost:8545``)
-const provider = new ethers.providers.JsonRpcProvider()
-
-// The provider also allows signing transactions to
-// send ether and pay to change state within the blockchain.
-// For this, we need the account signer...
-const signer = provider.getSigner()
-
 export default function Profile() {
   return (
     <>
       <Head>
-        <title>Profile - DcrowD</title>
+        <title>DcrowD - Crowdfunding made simple for small everyone</title>
+        <link rel="icon" href="/favicon.ico" />
+        <meta
+          name="description"
+          content="Most bookkeeping software is accurate, but hard to use. We make the opposite trade-off, and hope you don’t get audited."
+        />
       </Head>
+      {/* <Header /> */}
       <ConnectWallet />
     </>
   )

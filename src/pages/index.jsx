@@ -16,10 +16,7 @@ export default function Home() {
       <Head>
         <title>DcrowD - Crowdfunding made simple for small everyone</title>
         <link rel="icon" href="/favicon.ico" />
-        <meta
-          name="description"
-          content="Most bookkeeping software is accurate, but hard to use. We make the opposite trade-off, and hope you don’t get audited."
-        />
+        <meta name="description" />
       </Head>
       <Header />
       <main>

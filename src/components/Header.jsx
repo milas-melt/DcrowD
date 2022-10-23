@@ -114,14 +114,14 @@ export function Header() {
       <Container>
         <nav className="relative z-50 flex justify-between">
           <div className="flex items-center md:gap-x-12">
-            <Link href="#" aria-label="Home">
+            <Link href="/" aria-label="Home">
               <Image src={logoDcrowD} alt="DcrowD" unoptimized />
             </Link>
-            <div className="hidden md:flex md:gap-x-6">
+            {/* <div className="hidden md:flex md:gap-x-6">
               <NavLink href="#features">Features</NavLink>
               <NavLink href="#testimonials">Testimonials</NavLink>
               <NavLink href="#pricing">Pricing</NavLink>
-            </div>
+            </div> */}
           </div>
           <div className="flex items-center gap-x-5 md:gap-x-8">
             <div className="hidden md:block">
@@ -132,13 +132,13 @@ export function Header() {
                 Get started <span className="hidden lg:inline">today</span>
               </span>
             </Button>
-            <Button
+            {/* <Button
               type="button"
               onClick={handleConnectWallet}
               className="mr-2 mb-2 inline-flex items-center rounded-lg"
             >
               <span>Connect with MetaMask</span>
-            </Button>
+            </Button> */}
             <div className="-mr-1 md:hidden">
               <MobileNavigation />
             </div>
