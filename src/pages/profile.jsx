@@ -20,7 +20,7 @@ async function handleConnectWallet() {
 
 // If you don't specify a //url//, Ethers connects to the default
 // (i.e. ``http:/\/localhost:8545``)
-const provider = new ethers.providers.JsonRpcProvider()
+const provider = new ethers.providers.JsonRpcProvider('https://polygon-mumbai.g.alchemy.com/v2/yZK8rsR8iPy1ET2_EkACVEI9Dotd2XO4')
 
 // The provider also allows signing transactions to
 // send ether and pay to change state within the blockchain.

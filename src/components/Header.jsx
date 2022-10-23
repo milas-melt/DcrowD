@@ -127,6 +127,9 @@ export function Header() {
             <div className="hidden md:block">
               <NavLink href="/profile">Profile</NavLink>
             </div>
+            <div className="hidden md:block">
+              <NavLink href="/projects">Projects</NavLink>
+            </div>
             <Button href="/register" color="blue">
               <span>
                 Get started <span className="hidden lg:inline">today</span>

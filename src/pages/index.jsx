@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import React from "react";
 
 import { CallToAction } from '@/components/CallToAction'
 import { Faqs } from '@/components/Faqs'
@@ -9,8 +10,37 @@ import { Pricing } from '@/components/Pricing'
 import { PrimaryFeatures } from '@/components/PrimaryFeatures'
 import { SecondaryFeatures } from '@/components/SecondaryFeatures'
 import { Testimonials } from '@/components/Testimonials'
+import { gql } from "@apollo/client";
+import client from "./apollo-client";
+import Link from 'next/link'
+export async function getStaticProps() {
+  const { data } = await client.query({
+    query: gql`
+    {
+      activeProjects(where: { funded: false }) {
+        projectId
+        creator
+        expires
+        funded
+        goal
+        balance
+        uri
+      }
+    }
+    `,
+  });
 
-export default function Home() {
+  return {
+    props: {
+      t_projects: data
+    },
+ };
+}
+
+
+
+export default function Home({t_projects}) {
+  console.log(t_projects)
   return (
     <>
       <Head>
@@ -29,6 +59,7 @@ export default function Home() {
         <CallToAction />
         <Testimonials />
         <Pricing />
+
         <Faqs />
       </main>
       <Footer />
