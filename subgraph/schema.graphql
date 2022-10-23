@@ -1,0 +1,60 @@
+type ActiveProject @entity {
+  id: ID!
+  projectId: BigInt!
+  creator: Bytes!
+  expires: BigInt!
+  funded: Boolean!
+  goal: BigInt!
+  balance: BigInt!
+  uri: String
+}
+
+type ProjectCreated @entity {
+  id: ID!
+  projectId: BigInt!
+  creator: Bytes!
+  expires: BigInt!
+  goal: BigInt!
+  uri: String
+}
+
+type FundsCollected @entity {
+  id: ID!
+  projectId: BigInt!
+  creator: Bytes!
+  funds: BigInt!
+}
+
+type ProjectFunded @entity {
+  id: ID!
+  projectId: BigInt!
+  funder: Bytes!
+  amount: BigInt!
+  count: Int!
+}
+
+type FundingCancelled @entity {
+  id: ID!
+  projectId: BigInt!
+  funder: Bytes!
+  amount: BigInt!
+  count: Int!
+}
+
+type CreatorRatingUpdated @entity {
+  id: ID!
+  creator: Bytes!
+  rating: Int!
+}
+
+type FeesWithdrawn @entity {
+  id: ID!
+  to: Bytes!
+  amount: BigInt!
+}
+
+type OwnershipTransferred @entity {
+  id: ID!
+  from: Bytes!
+  to: Bytes!
+}
