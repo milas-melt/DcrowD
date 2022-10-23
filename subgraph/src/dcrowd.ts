@@ -1,6 +1,7 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import {
   Dcrowd,
+  CreatorRatingUpdated as CreatorRatingUpdatedEvent,
   FeesWithdrawn as FeesWithdrawnEvent,
   FundingCancelled as FundingCancelledEvent,
   FundsCollected as FundsCollectedEvent,
@@ -9,6 +10,10 @@ import {
   ProjectFunded as ProjectFundedEvent,
 } from "../generated/Dcrowd/Dcrowd";
 import {
+  CreatorRatingUpdated,
+  FeesWithdrawn,
+  FundingCancelled,
+  OwnershipTransferred,
   ProjectCreated,
   ActiveProject,
   ProjectFunded,
@@ -67,13 +72,12 @@ export function handleProjectFunded(event: ProjectFundedEvent): void {
         event.params.amount
       )
     );
-
     projectFunded.projectId = event.params.projectId;
     projectFunded.funder = event.params.funder;
     projectFunded.amount = event.params.amount;
-    projectFunded.count = new BigInt(1);
+    projectFunded.count = 1;
   } else {
-    projectFunded.count = projectFunded.count.plus(new BigInt(1));
+    projectFunded.count++;
   }
 
   activeProject!.balance = activeProject!.balance.plus(event.params.amount);
@@ -100,9 +104,57 @@ export function handleFundsCollected(event: FundsCollectedEvent): void {
   activeProject!.save();
 }
 
-export function handleFeesWithdrawn(event: FeesWithdrawnEvent): void {}
+export function handleFundingCancelled(event: FundingCancelledEvent): void {
+  let fundingCancelled = FundingCancelled.load(
+    getProjectFundedIdFromEventParams(
+      event.params.projectId,
+      event.params.funder,
+      event.params.amount
+    )
+  );
+  let activeProject = ActiveProject.load(event.params.projectId.toString());
 
-export function handleFundingCancelled(event: FundingCancelledEvent): void {}
+  if (!fundingCancelled) {
+    fundingCancelled = new FundingCancelled(
+      getProjectFundedIdFromEventParams(
+        event.params.projectId,
+        event.params.funder,
+        event.params.amount
+      )
+    );
+    fundingCancelled.projectId = event.params.projectId;
+    fundingCancelled.funder = event.params.funder;
+    fundingCancelled.amount = event.params.amount;
+    fundingCancelled.count = 1;
+  } else {
+    fundingCancelled.count++;
+  }
+
+  activeProject!.balance = activeProject!.balance.plus(event.params.amount);
+
+  fundingCancelled.save();
+  activeProject!.save();
+}
+
+export function handleCreatorRatingUpdated(
+  event: CreatorRatingUpdatedEvent
+): void {
+  let creatorRatingUpdated = CreatorRatingUpdated.load(
+    event.params.creator.toString()
+  );
+
+  if (!creatorRatingUpdated) {
+    creatorRatingUpdated = new CreatorRatingUpdated(
+      event.params.creator.toString()
+    );
+  }
+
+  creatorRatingUpdated.rating = event.params.rating;
+
+  creatorRatingUpdated.save();
+}
+
+export function handleFeesWithdrawn(event: FeesWithdrawnEvent): void {}
 
 export function handleOwnershipTransferred(
   event: OwnershipTransferredEvent

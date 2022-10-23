@@ -30,7 +30,7 @@ type ProjectFunded @entity {
   projectId: BigInt!
   funder: Bytes!
   amount: BigInt!
-  count: BigInt!
+  count: Int!
 }
 
 type FundingCancelled @entity {
@@ -38,10 +38,23 @@ type FundingCancelled @entity {
   projectId: BigInt!
   funder: Bytes!
   amount: BigInt!
+  count: Int!
+}
+
+type CreatorRatingUpdated @entity {
+  id: ID!
+  creator: Bytes!
+  rating: Int!
 }
 
 type FeesWithdrawn @entity {
   id: ID!
   to: Bytes!
   amount: BigInt!
+}
+
+type OwnershipTransferred @entity {
+  id: ID!
+  from: Bytes!
+  to: Bytes!
 }
