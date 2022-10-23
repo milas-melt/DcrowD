@@ -69,6 +69,15 @@ export class ActiveProject extends Entity {
     this.set("expires", Value.fromBigInt(value));
   }
 
+  get funded(): boolean {
+    let value = this.get("funded");
+    return value!.toBoolean();
+  }
+
+  set funded(value: boolean) {
+    this.set("funded", Value.fromBoolean(value));
+  }
+
   get goal(): BigInt {
     let value = this.get("goal");
     return value!.toBigInt();
@@ -76,6 +85,15 @@ export class ActiveProject extends Entity {
 
   set goal(value: BigInt) {
     this.set("goal", Value.fromBigInt(value));
+  }
+
+  get balance(): BigInt {
+    let value = this.get("balance");
+    return value!.toBigInt();
+  }
+
+  set balance(value: BigInt) {
+    this.set("balance", Value.fromBigInt(value));
   }
 
   get uri(): string | null {
@@ -296,6 +314,15 @@ export class ProjectFunded extends Entity {
 
   set amount(value: BigInt) {
     this.set("amount", Value.fromBigInt(value));
+  }
+
+  get count(): BigInt {
+    let value = this.get("count");
+    return value!.toBigInt();
+  }
+
+  set count(value: BigInt) {
+    this.set("count", Value.fromBigInt(value));
   }
 }
 

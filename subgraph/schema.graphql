@@ -3,7 +3,9 @@ type ActiveProject @entity {
   projectId: BigInt!
   creator: Bytes!
   expires: BigInt!
+  funded: Boolean!
   goal: BigInt!
+  balance: BigInt!
   uri: String
 }
 
@@ -28,6 +30,7 @@ type ProjectFunded @entity {
   projectId: BigInt!
   funder: Bytes!
   amount: BigInt!
+  count: BigInt!
 }
 
 type FundingCancelled @entity {
