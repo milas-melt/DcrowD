@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Popover, Transition } from '@headlessui/react'
 import clsx from 'clsx'
 import Image from 'next/future/image'
+import { ethers } from 'ethers'
 
 import { Button } from '@/components/Button'
 import { Container } from '@/components/Container'
@@ -90,6 +91,23 @@ function MobileNavigation() {
   )
 }
 
+async function handleConnectWallet() {
+  const provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
+  // Prompt user for account connections
+  await provider.send('eth_requestAccounts', [])
+  const signer = provider.getSigner()
+  console.log('Account:', await signer.getAddress())
+}
+
+// If you don't specify a //url//, Ethers connects to the default
+// (i.e. ``http:/\/localhost:8545``)
+const provider = new ethers.providers.JsonRpcProvider()
+
+// The provider also allows signing transactions to
+// send ether and pay to change state within the blockchain.
+// For this, we need the account signer...
+const signer = provider.getSigner()
+
 export function Header() {
   return (
     <header className="py-10">
@@ -113,6 +131,13 @@ export function Header() {
               <span>
                 Get started <span className="hidden lg:inline">today</span>
               </span>
+            </Button>
+            <Button
+              type="button"
+              onClick={handleConnectWallet}
+              className="mr-2 mb-2 inline-flex items-center rounded-lg"
+            >
+              <span>Connect with MetaMask</span>
             </Button>
             <div className="-mr-1 md:hidden">
               <MobileNavigation />

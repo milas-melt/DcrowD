@@ -11,7 +11,7 @@ export default function Register() {
   return (
     <>
       <Head>
-        <title>Sign Up - TaxPal</title>
+        <title>Sign Up - DcrowD</title>
       </Head>
       <AuthLayout>
         <div className="flex flex-col">
