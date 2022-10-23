@@ -4,7 +4,6 @@ const getActiveProjects = () => {
   return gql`
     {
       activeProjects(where: { funded: false }) {
-        # id
         projectId
         creator
         expires
@@ -34,7 +33,23 @@ const getInactiveProjects = () => {
   `;
 };
 
-const getFunderTransactions = (funder) => {
+const getAllProjects = () => {
+  return gql`
+    {
+      activeProjects {
+        projectId
+        creator
+        expires
+        funded
+        goal
+        balance
+        uri
+      }
+    }
+  `;
+};
+
+const getWalletTransactions = (funder) => {
   return gql`
     {
       projectFundeds( where: {funder: ${funder}}) {
@@ -83,4 +98,10 @@ const getProjectTransactions = (projectId) => {
   `;
 };
 
-export { getActiveProjects, getInactiveProjects, getFunderTransactions };
+export {
+  getActiveProjects,
+  getInactiveProjects,
+  getAllProjects,
+  getWalletTransactions,
+  getProjectTransactions,
+};
