@@ -10,6 +10,8 @@ import "hardhat-deploy";
 import "solidity-coverage";
 
 const SECRET_KEY_1 = process.env.SECRET_KEY_1 || "";
+const SECRET_KEY_2 = process.env.SECRET_KEY_2 || "";
+const SECRET_KEY_3 = process.env.SECRET_KEY_3 || "";
 const POLYGON_RPC_URL = process.env.POLYGON_RPC_URL || "";
 const MUMBAI_RPC_URL = process.env.MUMBAI_RPC_URL || "";
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "";
@@ -28,13 +30,13 @@ const config: HardhatUserConfig = {
         },
         polygonMumbai: {
             url: MUMBAI_RPC_URL,
-            accounts: [SECRET_KEY_1],
+            accounts: [SECRET_KEY_1, SECRET_KEY_2, SECRET_KEY_3],
             saveDeployments: true,
             chainId: 80001,
         },
         polygon: {
             url: POLYGON_RPC_URL,
-            accounts: [SECRET_KEY_1],
+            accounts: [SECRET_KEY_1, SECRET_KEY_2, SECRET_KEY_3],
             saveDeployments: true,
             chainId: 137,
         },
