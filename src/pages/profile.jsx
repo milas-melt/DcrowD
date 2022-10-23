@@ -6,7 +6,7 @@ import { AuthLayout } from '@/components/AuthLayout'
 import { Button } from '@/components/Button'
 import { TextField } from '@/components/Fields'
 import logoDcrowD from '@/images/logos/dcrowd.svg'
-
+import { Header } from '@/components/Header'
 import { ethers } from 'ethers'
 import ConnectWallet from '../components/ConnectWallet.jsx'
 
@@ -33,7 +33,10 @@ export default function Profile() {
       <Head>
         <title>Profile - DcrowD</title>
       </Head>
+      <Header />
+      <main>
       <ConnectWallet />
+      </main>
     </>
   )
 }

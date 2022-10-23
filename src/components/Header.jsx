@@ -91,12 +91,16 @@ function MobileNavigation() {
   )
 }
 
+let isLoggedIn = false 
 async function handleConnectWallet() {
   const provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
   // Prompt user for account connections
-  await provider.send('eth_requestAccounts', [])
+  const account = await provider.send('eth_requestAccounts', [])
   const signer = provider.getSigner()
-  console.log('Account:', await signer.getAddress())
+  // console.log('Account:', await signer.getAddress())
+  if(account && account.length>0) {
+    isLoggedIn = true
+  }
 }
 
 // If you don't specify a //url//, Ethers connects to the default
@@ -135,13 +139,22 @@ export function Header() {
                 Get started <span className="hidden lg:inline">today</span>
               </span>
             </Button>
-            <Button
+            { !isLoggedIn ? <Button
               type="button"
               onClick={handleConnectWallet}
               className="mr-2 mb-2 inline-flex items-center rounded-lg"
             >
               <span>Connect with MetaMask</span>
-            </Button>
+            </Button> :
+            <Button
+            type="button"
+            onClick={handleConnectWallet}
+            className="mr-2 mb-2 inline-flex items-center rounded-lg"
+          >
+            <span>Logout</span>
+          </Button>
+          }
+
             <div className="-mr-1 md:hidden">
               <MobileNavigation />
             </div>
